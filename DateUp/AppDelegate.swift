@@ -17,8 +17,71 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Initialize Parse.
+        
+        Parse.setApplicationId("a5PrNTaJTzsjNsgo60q6FTo9WPsnTnCbAhkhF7DE", clientKey: "nGWxZKNtXOVO0h14l26b2Qgkop7JGQH6Wxyb6dbQ")
+        
+        PFFacebookUtils.initializeFacebook()
+        
+//        [Parse setApplicationId:@"a5PrNTaJTzsjNsgo60q6FTo9WPsnTnCbAhkhF7DE"
+//        clientKey:@"nGWxZKNtXOVO0h14l26b2Qgkop7JGQH6Wxyb6dbQ"];
+      
+//        let testObject = PFObject(className: "TestObject")
+//        testObject["foo"] = "bar"
+//        testObject.save()
+        
+        
+//        PFObject *testObject = [PFObject objectWithClassName:@"TestObject"];
+//        testObject[@"foo"] = @"bar";
+//        [testObject saveInBackground];
+        
+        
+        var storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        var initialVC : UIViewController
+        
+//        if PFUser.currentUser() != nil{.....}
+        if currentUser() != nil
+        {
+            //Uses the User struct's function currentUser instead of the "PFUser" class method
+            
+            
+//            initialVC = storyboard.instantiateViewControllerWithIdentifier("CardsNavController") as UIViewController
+            
+            initialVC = pageController
+            
+            
+//            initialVC = ViewController(transitionStyle: UIPageViewControllerTransitionStyle.Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: nil)
+//            
+            //Use the above format to initialise the "initialVC" as opposed to the one detailed below
+            
+//            initialVC = storyboard.instantiateViewControllerWithIdentifier("PageController") as UIViewController
+            
+            
+        }
+        else
+        {
+            //currentUser doesnt exist
+            initialVC = storyboard.instantiateViewControllerWithIdentifier("LoginViewControllerID") as UIViewController
+            
+        }
+        
+        self.window?.rootViewController = initialVC
+        self.window?.makeKeyAndVisible()
+        
+        
         return true
     }
+    
+    
+    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject?) -> Bool
+    {
+       return FBAppCall.handleOpenURL(url, sourceApplication: sourceApplication, withSession: PFFacebookUtils.session())
+        
+    }
+    
+    
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -36,12 +99,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        
+        
+        FBAppCall.handleDidBecomeActiveWithSession(PFFacebookUtils.session())
+        
+        
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+        PFFacebookUtils.session().close()
     }
 
     // MARK: - Core Data stack
