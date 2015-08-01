@@ -76,6 +76,7 @@ func saveMessage(matchID: String, message: Message)
     ref.childByAppendingPath(matchID).updateChildValues([dateFormatter().stringFromDate(message.date) : ["message" : message.message , "sender" : message.senderID]])
 }
 
+
 func fetchMessages(matchID: String, callback: ([Message]) -> ())
 {
     ref.childByAppendingPath(matchID).queryLimitedToFirst(25).observeSingleEventOfType(FEventType.Value, withBlock: {

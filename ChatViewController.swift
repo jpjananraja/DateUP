@@ -134,7 +134,7 @@ class ChatViewController : JSQMessagesViewController
     {
         let message = JSQMessage(senderId: senderId, senderDisplayName: senderDisplayName, date: date, text: text)
         
-        self.messages.append(message)
+//        self.messages.append(message)
         
         //If a value for self.matchID has been set
         if let id = self.matchID
@@ -152,6 +152,8 @@ class ChatViewController : JSQMessagesViewController
     /////////////////////////////////////////////////////////////////////////////////
     func updateAvatarImageForIndexPath( indexPath: NSIndexPath, avatarImage: UIImage)
     {
+        
+        
         let cell: JSQMessagesCollectionViewCell = self.collectionView.cellForItemAtIndexPath(indexPath) as JSQMessagesCollectionViewCell
         cell.avatarImageView.image = JSQMessagesAvatarImageFactory.circularAvatarImage( avatarImage, withDiameter: 60 )
     }

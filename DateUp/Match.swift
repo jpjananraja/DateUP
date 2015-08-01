@@ -17,6 +17,7 @@ struct Match
 
 func fetchMatches(callBack: ([Match]) -> ())
 {
+    //Obtain the objects which indicate the users the current user is matched with
     PFQuery(className: "Action")
         .whereKey("byUser", equalTo: PFUser.currentUser().objectId)
         .whereKey("type", equalTo: "matched").findObjectsInBackgroundWithBlock({
@@ -24,12 +25,24 @@ func fetchMatches(callBack: ([Match]) -> ())
         
         if let matches = objects as? [PFObject]
         {
+//            let matchedUsers = matches.map({
+//                (object) -> (matchID: String, userID: String)
+//                in
+//                (object.objectId, object.objectForKey("toUser") as String)
+//            })
+            //The above functioanlity only works with the hacky solution of manually changing the "matched" "type" in "Action" in parse.com
+            
+            
+            
+            //the below functionality should work with two different facebook logins liking eachother
             let matchedUsers = matches.map({
-                (object) -> (matchID: String, userID: String)
+                (object)->(matchID: String, userID: String)
                 in
-                (object.objectId, object.objectForKey("toUser") as String)
+                (object.objectForKey("matchId") as String, object.objectForKey("toUser") as String)
             })
             
+            //Get the userIDs of all the users that have been matched with current user
+            //.userID is extracted from the tuple above (... , userID: String)
             let userIDs = matchedUsers.map({$0.userID})
             
             PFUser.query()

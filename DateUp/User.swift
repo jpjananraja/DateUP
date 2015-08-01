@@ -143,8 +143,43 @@ func saveSkip(user: User)
 //}
 
 
+//func saveLike(user: User)
+//{
+//    PFQuery(className: "Action")
+//        .whereKey("byUser", equalTo: user.id)
+//        .whereKey("toUser", equalTo: PFUser.currentUser().objectId)
+//        .whereKey("type", equalTo: "liked")
+//        .getFirstObjectInBackgroundWithBlock({
+//            object, error in
+//            
+//            var matched = false
+//            
+//            if object != nil
+//            {
+//                matched = true
+//                object.setObject("matched", forKey: "type")
+//                object.saveInBackgroundWithBlock(nil)
+//            }
+//            
+//            let match = PFObject(className: "Action")
+//            match.setObject(PFUser.currentUser().objectId, forKey: "byUser")
+//            match.setObject(user.id, forKey: "toUser")
+//            match.setObject(matched ? "matched" : "liked", forKey: "type")
+//            match.saveInBackgroundWithBlock(nil)
+//        
+//        })
+//    
+//    
+//}
+
+
+//The above function will not provide suitable functionality in real word testing between 2 users
+//The reworked function to work with 2 different facebook logins
+
+
 func saveLike(user: User)
 {
+    //If the user that we have "liked" has already liked us, then retrieve that object
     PFQuery(className: "Action")
         .whereKey("byUser", equalTo: user.id)
         .whereKey("toUser", equalTo: PFUser.currentUser().objectId)
@@ -152,25 +187,54 @@ func saveLike(user: User)
         .getFirstObjectInBackgroundWithBlock({
             object, error in
             
+            // create a unique chatroom (matchId)
+            let matchId = PFUser.currentUser()!.objectId! + "-" + user.id
+
+            
             var matched = false
             
             if object != nil
             {
                 matched = true
                 object.setObject("matched", forKey: "type")
+                
+                //set the unique chatroom match id
+                object.setObject(matchId, forKey: "matchId")
+                
                 object.saveInBackgroundWithBlock(nil)
             }
             
+            //Now perform the "Like/Match" funtionlity for the current user
             let match = PFObject(className: "Action")
             match.setObject(PFUser.currentUser().objectId, forKey: "byUser")
             match.setObject(user.id, forKey: "toUser")
-            match.setObject(matched ? "matched" : "liked", forKey: "type")
+            
+            
+//            match.setObject(matched ? "matched" : "liked", forKey: "type")
+           
+            if matched
+            {
+                match.setObject("matched", forKey: "type")
+                match.setObject(matchId, forKey: "matchId")
+            }
+            else //If its only the current user that has liked and the other user hasn;t liked yet then do the following
+            {
+                match.setObject("liked", forKey: "type")
+            }
+            
+            
             match.saveInBackgroundWithBlock(nil)
-        
+            
         })
     
     
 }
+
+
+
+
+
+
 
 //MARK:- Bruce's code
 //Code extracted from Bruce at BitFountain
